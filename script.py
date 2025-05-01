@@ -30,7 +30,8 @@ def parse_calendar_data(file):
             "class" : classname,
             "summary" : summary,
             "description" : description,
-            "due_date" : event.end.date().isoformat()
+            "due_date" : event.end.date().isoformat(),
+            "completed" : False
         }
         calendar_data.append(sub_dictionary)
 
@@ -46,7 +47,7 @@ def sort_data_by_class(data):
 
     sorted_dictionary = {}
     for classname in classnames:
-        sorted_dictionary[classname] = get_assignments_for_class(data, classname) #TODO - always makes dict[0] new val rather than adding to end of it
+        sorted_dictionary[classname] = get_assignments_for_class(data, classname)
     
     return sorted_dictionary
 

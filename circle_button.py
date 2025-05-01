@@ -1,20 +1,22 @@
 from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtGui import QCursor
 
 class CircleButton(QPushButton):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setCheckable(True)
-        self.setFixedSize(QSize(10, 10))
+        self.setFixedSize(QSize(12, 12))
         self.setStyleSheet(self.style_empty())
         self.clicked.connect(self.toggle_fill)
+        self.setCursor(QCursor(Qt.PointingHandCursor))
 
     def style_empty(self):
         return """
             QPushButton {
                 border: 1px solid black;
-                border-radius: 5px;
-                background-color: none;
+                border-radius: 6px;
+                background-color: transparent;
             }
         """
 
@@ -22,7 +24,7 @@ class CircleButton(QPushButton):
         return """
             QPushButton {
                 border: 1px solid black;
-                border-radius: 5px;
+                border-radius: 6px;
                 background-color: purple;
             }
         """
