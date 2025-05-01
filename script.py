@@ -1,39 +1,21 @@
 from ics import Calendar
 import requests
 
-# url = "https://byui.instructure.com/feeds/calendars/user_MW9zKHiVd9h9cuWWsZjt5i1zHLRYUrt3wzEo4xjC.ics"
-
-# response = requests.get(url)
-
-with open("calendar.ics") as calendar_file:
-    calendar = Calendar(calendar_file.read())
+# https://byui.instructure.com/feeds/calendars/user_MW9zKHiVd9h9cuWWsZjt5i1zHLRYUrt3wzEo4xjC.ics
 
 
-def sort_data(data):
-
-    classnames = []
-    for event in data:
-        if event["class"] not in classnames:
-            classnames.append(event["class"])
-
-    sorted_dictionary = {}
-    for classname in classnames:
-        sorted_dictionary[classname] = get_assignments_for_class(data, classname) #TODO - always makes dict[0] new val rather than adding to end of it
-    
-    return sorted_dictionary
+def get_url():
+    return input("Please enter the ics url: ")
 
 
-def get_assignments_for_class(data, classname):
+def get_ics():
+    url = get_url()
+    response = requests.get(url)
+    calendar = Calendar(response.text)
+    return calendar
 
-    assignment_list = []
-    for event in data:
-        if event["class"] == classname:
-            assignment_list.append(event)
 
-    return assignment_list
-        
-
-def parse_calendar_file(file):
+def parse_calendar_data(file):
 
     calendar_data = []
     for event in file.events:
@@ -51,7 +33,21 @@ def parse_calendar_file(file):
         calendar_data.append(sub_dictionary)
 
     return calendar_data
-        
+
+
+def sort_data(data):
+
+    classnames = []
+    for event in data:
+        if event["class"] not in classnames:
+            classnames.append(event["class"])
+
+    sorted_dictionary = {}
+    for classname in classnames:
+        sorted_dictionary[classname] = get_assignments_for_class(data, classname) #TODO - always makes dict[0] new val rather than adding to end of it
+    
+    return sorted_dictionary
+
 
 def get_substring(string, start_char = None, end_char = None):
 
@@ -69,9 +65,24 @@ def get_substring(string, start_char = None, end_char = None):
         return string[start_index:end_index]
 
 
+def get_assignments_for_class(data, classname):
 
-dictionary_data = parse_calendar_file(calendar)
-sorted_calendar_data = sort_data(dictionary_data)
+    assignment_list = []
+    for event in data:
+        if event["class"] == classname:
+            assignment_list.append(event)
+
+    return assignment_list
+        
+
+def main():
+    calendar = get_ics()
+    dictionary_data = parse_calendar_data(calendar)
+    sorted_calendar_data = sort_data(dictionary_data)
+
+
+if __name__ == "__main__":
+    main()
 
 # a = [ # after parse calendar
 #     {"uid" : "12345",
@@ -105,4 +116,4 @@ sorted_calendar_data = sort_data(dictionary_data)
 #     "class" : "CSE",
 #     "summary" : "lorem",
 #     "description" : "lorem"}
-# ]} 
+# ]}
