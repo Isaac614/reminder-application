@@ -1,5 +1,6 @@
 from ics import Calendar
 import requests
+import json
 
 # https://byui.instructure.com/feeds/calendars/user_MW9zKHiVd9h9cuWWsZjt5i1zHLRYUrt3wzEo4xjC.ics
 
@@ -9,7 +10,8 @@ def get_url():
 
 
 def get_ics():
-    url = get_url()
+    # url = get_url()
+    url = "https://byui.instructure.com/feeds/calendars/user_MW9zKHiVd9h9cuWWsZjt5i1zHLRYUrt3wzEo4xjC.ics"
     response = requests.get(url)
     calendar = Calendar(response.text)
     return calendar
@@ -35,7 +37,7 @@ def parse_calendar_data(file):
     return calendar_data
 
 
-def sort_data(data):
+def sort_data_by_class(data):
 
     classnames = []
     for event in data:
@@ -47,6 +49,16 @@ def sort_data(data):
         sorted_dictionary[classname] = get_assignments_for_class(data, classname) #TODO - always makes dict[0] new val rather than adding to end of it
     
     return sorted_dictionary
+
+
+def sort_data_by_date(data):
+    
+    sorted_data = {}
+    for classname in data:
+        for i in range(len(data[classname])):
+            sorted_events = sorted(data[classname], key = lambda event: event["due_date"])
+            sorted_data[classname] = sorted_events
+    return sorted_data
 
 
 def get_substring(string, start_char = None, end_char = None):
@@ -73,12 +85,19 @@ def get_assignments_for_class(data, classname):
             assignment_list.append(event)
 
     return assignment_list
-        
+
+
+def update_json(filename, data):
+    with open(filename, "w") as json_file:
+        json.dump(data, json_file, indent = 4)
+
 
 def main():
     calendar = get_ics()
     dictionary_data = parse_calendar_data(calendar)
-    sorted_calendar_data = sort_data(dictionary_data)
+    sorted_calendar_data = sort_data_by_class(dictionary_data)
+    sorted_calendar_data = sort_data_by_date(sorted_calendar_data)
+    update_json("sorted_events.json", sorted_calendar_data)
 
 
 if __name__ == "__main__":
