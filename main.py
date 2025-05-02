@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel,  QHBoxLayout, QVBoxLayout, QSizePolicy, QScrollArea, QGroupBox, QCheckBox
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel,  QHBoxLayout, QVBoxLayout, QSizePolicy, QScrollArea, QCheckBox
 from PyQt5.QtCore import Qt
 from clickable_label import ClickableLabel
 from circle_button import CircleButton
@@ -53,6 +53,13 @@ class ReminderApp(QWidget):
         self.scroll_area.setObjectName("scroll")
         self.scroll_area.setStyleSheet("#scroll {border: 2px solid red;}")
         self.scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Add checkboxes
+        self.show_past_checkbox = QCheckBox("Show Past Assignments")
+        self.show_past_checkbox.setChecked(False)
+        self.show_past_checkbox.stateChanged.connect(self.update_text_area)
+
+        self.right_layout.addWidget(self.show_past_checkbox)
     
 
     def update_left_column(self, button_name): 
@@ -81,7 +88,7 @@ class ReminderApp(QWidget):
         class_name = self.get_active_list()
 
         # Clear previous data
-        self.delete_elements(self.right_layout)
+        self.delete_elements(self.right_layout, keep_widgets=[self.show_past_checkbox])
 
         # get relevant class data (or all the data)
         if class_name != "All Reminders":
@@ -92,17 +99,11 @@ class ReminderApp(QWidget):
                 for event in self.sorted_calendar_data[class_name]:
                     data.append(event)
 
-        # Add checkboxes
-        # self.show_past_checkbox = QCheckBox("Show Past Assignments")
-        # self.show_past_checkbox.setChecked(False)
-
-        # self.right_layout.addWidget(self.show_past_checkbox)
-
         # Populate text area
         for index, event in enumerate(data):
             row_widget = self.create_row_widget(index, event)
 
-            if data[index]["past"] or data[index]["completed"]:
+            if (data[index]["past"] and not self.show_past_checkbox.isChecked()) or data[index]["completed"]:
                 row_widget.setVisible(False)
 
             self.right_layout.addWidget(row_widget)
@@ -157,7 +158,6 @@ class ReminderApp(QWidget):
             self.clickable_labels[button.objectName()] = button
 
 
-
     def create_circle_button(self, index, event):
         circle = CircleButton(self)
         if event["completed"] == True:
@@ -200,16 +200,23 @@ class ReminderApp(QWidget):
         return button
 
 
-    def delete_elements(self, layout):
+    def delete_elements(self, layout, keep_widgets=None):
         """
-        clears all the elements in a given layout/container
+        Clears all widgets from the given layout except those in keep_widgets.
+        
+        :param layout: QLayout to clear
+        :param keep_widgets: list of widgets to keep (optional)
         """
+        if keep_widgets is None:
+            keep_widgets = []
+
         for i in reversed(range(layout.count())):
             item = layout.itemAt(i)
-            if item is not None:
-                widget = item.widget()
-                if widget is not None:
-                    widget.deleteLater()
+            widget = item.widget()
+
+            if widget is not None and widget not in keep_widgets:
+                widget.setParent(None)
+                widget.deleteLater()
 
 
     def update_button_style(self, button):
