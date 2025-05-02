@@ -1,7 +1,7 @@
 from ics import Calendar
 import requests
 import json
-
+from datetime import datetime, date
 # https://byui.instructure.com/feeds/calendars/user_MW9zKHiVd9h9cuWWsZjt5i1zHLRYUrt3wzEo4xjC.ics
 
 
@@ -25,13 +25,20 @@ def parse_calendar_data(file):
         summary = get_substring(event.name, end_char = "[")
         event_id = event.uid
         description = event.description
+        due_date = event.end.date().isoformat()
+        if datetime.strptime(due_date, "%Y-%m-%d").date() <  date.today():
+            past = True
+        else:
+            past = False
+
         sub_dictionary = {
             "uid" : event_id,
             "class" : classname,
             "summary" : summary,
             "description" : description,
-            "due_date" : event.end.date().isoformat(),
-            "completed" : False
+            "due_date" : due_date,
+            "completed" : False,
+            "past" : past
         }
         calendar_data.append(sub_dictionary)
 
@@ -94,11 +101,13 @@ def update_json(filename, data):
 
 
 def main():
-    calendar = get_ics()
-    dictionary_data = parse_calendar_data(calendar)
-    sorted_calendar_data = sort_data_by_class(dictionary_data)
-    sorted_calendar_data = sort_data_by_date(sorted_calendar_data)
-    update_json("sorted_events.json", sorted_calendar_data)
+    # calendar = get_ics()
+    # dictionary_data = parse_calendar_data(calendar)
+    # sorted_calendar_data = sort_data_by_class(dictionary_data)
+    # sorted_calendar_data = sort_data_by_date(sorted_calendar_data)
+    # update_json("sorted_events.json", sorted_calendar_data)
+
+    sorted_calendar_data = json.read("sorted_events.json")
 
 
 if __name__ == "__main__":
