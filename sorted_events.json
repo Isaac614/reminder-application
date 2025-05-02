@@ -579,15 +579,6 @@
     ],
     "CSE Majors": [
         {
-            "uid": "event-calendar-event-2385996",
-            "class": "CSE Majors",
-            "summary": "IEEE Society ",
-            "description": null,
-            "due_date": "2025-04-02",
-            "completed": false,
-            "past": true
-        },
-        {
             "uid": "event-calendar-event-2409228",
             "class": "CSE Majors",
             "summary": "Computing Team (Default) ",
