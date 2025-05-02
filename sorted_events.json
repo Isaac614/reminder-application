@@ -61,7 +61,7 @@
             "description": "",
             "due_date": "2025-05-01",
             "completed": false,
-            "past": false
+            "past": true
         },
         {
             "uid": "event-assignment-14857913",
@@ -801,7 +801,7 @@
             "description": null,
             "due_date": "2025-05-01",
             "completed": false,
-            "past": false
+            "past": true
         },
         {
             "uid": "event-calendar-event-2590346",
@@ -810,7 +810,7 @@
             "description": "[] (https://byui.instructure.com/courses/48558/files/148378696/preview)",
             "due_date": "2025-05-01",
             "completed": false,
-            "past": false
+            "past": true
         },
         {
             "uid": "event-calendar-event-2589216",
@@ -819,7 +819,7 @@
             "description": null,
             "due_date": "2025-05-01",
             "completed": false,
-            "past": false
+            "past": true
         },
         {
             "uid": "event-calendar-event-2547112",
@@ -828,7 +828,7 @@
             "description": null,
             "due_date": "2025-05-01",
             "completed": false,
-            "past": false
+            "past": true
         },
         {
             "uid": "event-calendar-event-2589318",
@@ -837,7 +837,7 @@
             "description": null,
             "due_date": "2025-05-01",
             "completed": false,
-            "past": false
+            "past": true
         },
         {
             "uid": "event-calendar-event-2547088",
@@ -846,7 +846,7 @@
             "description": null,
             "due_date": "2025-05-01",
             "completed": false,
-            "past": false
+            "past": true
         },
         {
             "uid": "event-calendar-event-2587210",
@@ -1068,7 +1068,7 @@
             "uid": "event-calendar-event-2583318",
             "class": "CSE Majors",
             "summary": "Cybersecurity Team ",
-            "description": null,
+            "description": "[] (https://byui.instructure.com/courses/48558/files/148571512/preview)",
             "due_date": "2025-05-09",
             "completed": false,
             "past": false
@@ -1295,6 +1295,15 @@
             "summary": "Devotional ",
             "description": "Elder David P. Homer\n\n[image.png] (https://byui.instructure.com/courses/48558/files/146710534/preview)",
             "due_date": "2025-05-20",
+            "completed": false,
+            "past": false
+        },
+        {
+            "uid": "event-calendar-event-2610302",
+            "class": "CSE Majors",
+            "summary": "CSE Department Forum ",
+            "description": "",
+            "due_date": "2025-05-21",
             "completed": false,
             "past": false
         },
@@ -4018,7 +4027,7 @@
             "description": "--------\nOverview\n--------\n\nThis discussion board is an opportunity for you to share scriptural insights and to learn from your classmates and instructor. Three posts are required throughout the week, designed to build upon each other to help you better understand and apply the scriptures in your life. Your instructor will also be involved in the discussion.\n\nNOTE: Though the actual due date and end date for this discussion fall on the same days as other activities this week, each post in this discussion has a recommended day of the week to post in order for it to be most meaningful for you and your classmates.\n\n------------\nInstructions\n------------\n\n* To complete this activity, you will share three posts throughout the week by their posted due dates. Follow the individual instructions and examples for the three posts below.\n\n* To see specific grading criteria, select the [3 Dots.] (https://byui.instructure.com/courses/341216/files/147260780/preview) \u00a0button at the top of this window and choose Show rubric.\n\nPost 01 Scriptural Insight\n--------------------------\n\nInstructions\n------------\n\nFor this discussion to be most meaningful for you and your classmates, we recommend completing it by Tuesday (mountain time).\n\n* Copy and Paste (or type) a passage of scripture from the assigned reading that teaches a meaningful principle.\n\n* Add the reference to the scripture passage so others can know where to go to find it.\n\n* Identify or restate that principle in your own words and put it in bold font. See example below.\n\n* Briefly discuss that principle and its significance to you.\n\nExample\n-------\n\nStudent 01: \"Therefore go, my son, and thou shalt be favored of the Lord because thou hast not murmured.\"\u20131 Nephi 3:6. I love 1 Nephi 3:7, but in reading 1 Nephi 3:6 this time, I noticed something I hadn't focused on before. Nephi isn't just blessed for being willing to return to Jerusalem; he's blessed because he does so with a good attitude. After all, Laman and Lemuel make the trip, but they do so begrudgingly. This makes me think that real obedience isn't just completing the action the Lord requires, like going home teaching, he also requires that we obey with the right attitude, like going home teaching joyfully with a desire to bless and uplift others.\n\n\u00a0\n\nPost 02 Increased Understanding\n-------------------------------\n\nInstructions\n------------\n\nFor this discussion to be most meaningful for you and your classmates, we recommend completing it by Thursday (mountain time).\n\nFor the second post, you will reply to a classmate's post. Try to add further insight or understanding into one of the posts made by your classmates by sharing a related scripture, or a quote from a church leader and then explaining how you feel it adds additional insight or understanding to the scripture or principle being discussed.\n\nExample\n-------\n\nStudent 02: This is a great insight. It is very hard not to murmur when we face a difficult task that we wish would be a lot easier. In Nephi's case, I learned something in studying the Institute manual that helped me realize how great his sacrifice was in making the trip back to Jerusalem. I just thought it was a three-day trip one way because 1 Nephi 2:6 talks about when Lehi \"had traveled three days in the wilderness . . .\" But the Institute Manual pointed out that Lehi and his family first \"came down by the borders near the shore of the Red Sea\" (1 Nephi 5:6), which is \"about 180 miles through a hot, barren country infested anciently by many marauders.\" Combined with three days of traveling in the wilderness, this means that the whole trip was \"at least a twelve-to-fourteen-day trip one way.\" This was not an easy task, but Nephi does not murmur and I think it is because of his great faith in the Lord and desire to do what was right that he was able to tackle this challenge with a good attitude.\n\n\u00a0\n\nPost 03 Personal Application\n----------------------------\n\nInstructions\n------------\n\nFor the third post, you will reply to a classmate's post. Pick a post that you can make a personal application to. You can either share a brief story of when you have seen that principle in your life, identify a way you are currently trying to live that principle or share an example of a friend or family member who has exemplified that principle to you.\n\nExample\n-------\n\nStudent 03: I can imagine being quite frustrated if I had first been asked by my dad to leave our city on a 14-day trip and then abruptly being asked to travel back 14 days, retrieve something we left behind, and then being asked to return for another 14-day trip\u2014that's 42 days of traveling! I might think it was a big waste of time and a huge inconvenience. In my life, the prophet has not asked me to accomplish a task like that, but he has asked me to serve as a visiting teacher. I admit that sometimes I feel like this assignment can feel like an inconvenience for me since I have very little free time as a student right now. However, I know that when I have a good attitude about this assignment, it has helped me to love the sisters I visit and to have a better spirit as I've shared messages with them. Sometimes obedience will be inconvenient, but it will always be the right thing to do.\n\n\u00a0\n\nNOTE: Be sure to complete all instructions in this activity before considering it complete.",
             "due_date": "2025-05-01",
             "completed": false,
-            "past": false
+            "past": true
         },
         {
             "uid": "event-assignment-14669229",
@@ -4027,7 +4036,7 @@
             "description": "--------\nOverview\n--------\n\nThe purpose of this activity is to help you focus on significant principles and themes within this week's Book of Mormon scripture block. You will choose one option from several study activities to help you focus on these principles, then submit a response to that activity. Your instructor will grade your submission and provide feedback.\n\n------------\nInstructions\n------------\n\n* Prepare by first completing this week's assigned readings in the second half of the Book of Mormon.\n\n* Choose one option from the list of directed study activities on this document: [W02 Directed Study.] (https://byui.instructure.com/courses/341216/files/147260772?wrap=1)\n\n* Complete\u00a0the directed study activity that you chose, by following the instructions provided under that option.\n\n* Write your response in a new document and save that document to your computer.\n\n* At the top of the document, indicate the option that you chose.\n\n* Be sure to answer all the questions and/or complete all the instructions listed under the option that you chose.\n\n* Your total response should be about 150\u2013300 words.\n\n* Submit your completed\u00a0document in this assignment.\n\n\u00a0\n\nNOTE: Be sure to complete all instructions in this activity before submitting it.",
             "due_date": "2025-05-01",
             "completed": false,
-            "past": false
+            "past": true
         },
         {
             "uid": "event-assignment-14669231",

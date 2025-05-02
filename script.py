@@ -2,6 +2,7 @@ from ics import Calendar
 import requests
 import json
 from datetime import datetime, date
+from pathlib import Path
 # https://byui.instructure.com/feeds/calendars/user_MW9zKHiVd9h9cuWWsZjt5i1zHLRYUrt3wzEo4xjC.ics
 
 
@@ -101,14 +102,19 @@ def update_json(filename, data):
 
 
 def main():
-    # calendar = get_ics()
-    # dictionary_data = parse_calendar_data(calendar)
-    # sorted_calendar_data = sort_data_by_class(dictionary_data)
-    # sorted_calendar_data = sort_data_by_date(sorted_calendar_data)
-    # update_json("sorted_events.json", sorted_calendar_data)
+        
+    file_path = Path("sorted_events.json")
+    if file_path.exists():
+        with open(file_path) as json_file:
+            sorted_calendar_data = json.load(json_file)
 
-    sorted_calendar_data = json.read("sorted_events.json")
-
+    else:
+        with open(file_path, 'w') as json_file:
+            calendar = get_ics()
+            dictionary_data = parse_calendar_data(calendar)
+            sorted_calendar_data = sort_data_by_class(dictionary_data)
+            sorted_calendar_data = sort_data_by_date(sorted_calendar_data)
+            update_json("sorted_events.json", sorted_calendar_data)
 
 if __name__ == "__main__":
     main()

@@ -3,6 +3,8 @@ from PyQt5.QtCore import Qt
 from clickable_label import ClickableLabel
 from circle_button import CircleButton
 import script
+from pathlib import Path
+import json
 
 class ReminderApp(QWidget):
     def __init__(self, sorted_calendar_data):
@@ -42,9 +44,7 @@ class ReminderApp(QWidget):
         self.right_column = QWidget(self)
         self.right_column.setObjectName("rightColumn")
         self.right_layout = QVBoxLayout(self.right_column)
-
-        self.right_column_label = QLabel("placeholer label", self.right_column)
-        self.right_layout.addWidget(self.right_column_label)
+        self.right_layout.setAlignment(Qt.AlignTop)
 
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidget(self.right_column)
@@ -55,11 +55,24 @@ class ReminderApp(QWidget):
         self.scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # Add checkboxes
+        self.checkbox_widget = QWidget(self)
+        self.checkbox_layout = QHBoxLayout(self.checkbox_widget)
+        self.checkbox_layout.setAlignment(Qt.AlignLeft)
+        self.checkbox_layout.setContentsMargins(0, 5, 0, 5)
+        self.checkbox_widget.setStyleSheet("margin-left: -1;")
+        self.right_layout.addWidget(self.checkbox_widget)
+
         self.show_past_checkbox = QCheckBox("Show Past Assignments")
         self.show_past_checkbox.setChecked(False)
         self.show_past_checkbox.stateChanged.connect(self.update_text_area)
+        self.checkbox_layout.addWidget(self.show_past_checkbox)
 
-        self.right_layout.addWidget(self.show_past_checkbox)
+        self.show_completed_checkbox = QCheckBox("Show Completed Assignments")
+        self.show_completed_checkbox.setChecked(False)
+        self.show_completed_checkbox.stateChanged.connect(self.update_text_area)
+        self.checkbox_layout.addWidget(self.show_completed_checkbox)
+
+        self.update_text_area()
     
 
     def update_left_column(self, button_name): 
@@ -72,7 +85,7 @@ class ReminderApp(QWidget):
         self.update_button_style(button)
 
         # Set all other buttons to inactive
-        for name, other_button in self.class_buttons.items():
+        for name, other_button in self.clickable_labels.items():
             if other_button != button:
                 other_button.setProperty("active", False)
                 self.update_button_style(other_button)
@@ -88,7 +101,7 @@ class ReminderApp(QWidget):
         class_name = self.get_active_list()
 
         # Clear previous data
-        self.delete_elements(self.right_layout, keep_widgets=[self.show_past_checkbox])
+        self.delete_elements(self.right_layout, keep_widgets=[self.checkbox_widget])
 
         # get relevant class data (or all the data)
         if class_name != "All Reminders":
@@ -103,7 +116,8 @@ class ReminderApp(QWidget):
         for index, event in enumerate(data):
             row_widget = self.create_row_widget(index, event)
 
-            if (data[index]["past"] and not self.show_past_checkbox.isChecked()) or data[index]["completed"]:
+            if (data[index]["past"] and not self.show_past_checkbox.isChecked()) or \
+                (data[index]["completed"] and not self.show_completed_checkbox.isChecked()):
                 row_widget.setVisible(False)
 
             self.right_layout.addWidget(row_widget)
@@ -117,7 +131,7 @@ class ReminderApp(QWidget):
         text_widget = QWidget()
         text_layout = QVBoxLayout(text_widget)
         text_layout.setContentsMargins(0, 0, 0, 0)
-        text_layout.setSpacing(0)
+        text_layout.setSpacing(0)   
         
         circle = self.create_circle_button(index, event)
             
@@ -137,17 +151,19 @@ class ReminderApp(QWidget):
     def create_buttons(self, sorted_calendar_data):
         self.clickable_labels = {}
 
-        all_button = ClickableLabel("All Reminders", self.left_column)
-        all_button.setFixedHeight(35)
-        all_button.setObjectName("All_Reminders_button")
-        all_button.setStyleSheet("""border: 1px solid lightblue;
+        self.all_button = ClickableLabel("All Reminders", self.left_column)
+        self.all_button.setFixedHeight(35)
+        self.all_button.setObjectName("All_Reminders_button")
+        self.all_button.setStyleSheet("""border: 1px solid lightblue;
                                  background-color: transparent""")
+        self.all_button.setProperty("active", True)
+        self.highlight_label(label=self.all_button)
 
-        all_button.clicked.connect(self.handle_label_click)
-        all_button.clicked.connect(self.update_text_area)
+        self.all_button.clicked.connect(self.handle_label_click)
+        self.all_button.clicked.connect(self.update_text_area)
 
-        self.left_layout.addWidget(all_button)
-        self.clickable_labels["all_reminders"] = all_button
+        self.left_layout.addWidget(self.all_button)
+        self.clickable_labels["all_reminders"] = self.all_button
         
         for class_name in sorted_calendar_data:
             button = self.create_clickable_label(class_name)
@@ -156,7 +172,7 @@ class ReminderApp(QWidget):
 
             self.left_layout.addWidget(button)
             self.clickable_labels[button.objectName()] = button
-
+            
 
     def create_circle_button(self, index, event):
         circle = CircleButton(self)
@@ -167,7 +183,7 @@ class ReminderApp(QWidget):
         circle.setProperty("event_index", index)
         circle.setProperty("event_class", event["class"])
 
-        circle.toggled.connect(self.update_json_on_complete, circle.isChecked())
+        circle.toggled.connect(self.update_json_on_complete)
         circle.toggled.connect(self.update_text_area)
         return circle
 
@@ -177,12 +193,18 @@ class ReminderApp(QWidget):
         self.highlight_label()
 
 
-    def highlight_label(self):
-        sender = self.sender()
-        if sender:
-            sender.setStyleSheet("""background-color: lightblue;
-                                 border: 1px solid lightblue;""")
-            sender.setProperty("active", True)
+    def highlight_label(self, label = None):
+        if not label:
+            sender = self.sender()
+            if sender:
+                sender.setStyleSheet("""background-color: lightblue;
+                                    border: 1px solid lightblue;""")
+                sender.setProperty("active", True)
+        
+        else:
+            label.setStyleSheet("""background-color: lightblue;
+                                    border: 1px solid lightblue;""")
+            label.setProperty("active", True)
 
 
     def clear_all_label_highlights(self):
@@ -244,11 +266,19 @@ class ReminderApp(QWidget):
 
 def main():
     app = QApplication([])
+    
+    file_path = Path("sorted_events.json")
+    if file_path.exists():
+        with open(file_path) as json_file:
+            sorted_calendar_data = json.load(json_file)
 
-    calendar = script.get_ics()
-    dictionary_data = script.parse_calendar_data(calendar)
-    sorted_calendar_data = script.sort_data_by_class(dictionary_data)
-    sorted_calendar_data = script.sort_data_by_date(sorted_calendar_data)
+    else:
+        with open(file_path, 'w') as json_file:
+            calendar = script.get_ics()
+            dictionary_data = script.parse_calendar_data(calendar)
+            sorted_calendar_data = script.sort_data_by_class(dictionary_data)
+            sorted_calendar_data = script.sort_data_by_date(sorted_calendar_data)
+            script.update_json("sorted_events.json", sorted_calendar_data)
 
     window = ReminderApp(sorted_calendar_data)
     window.show()
