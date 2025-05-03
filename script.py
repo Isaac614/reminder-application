@@ -3,7 +3,6 @@ import requests
 import json
 from datetime import datetime, date
 from pathlib import Path
-# https://byui.instructure.com/feeds/calendars/user_MW9zKHiVd9h9cuWWsZjt5i1zHLRYUrt3wzEo4xjC.ics
 
 
 def get_url():
@@ -11,8 +10,7 @@ def get_url():
 
 
 def get_ics():
-    # url = get_url()
-    url = "https://byui.instructure.com/feeds/calendars/user_MW9zKHiVd9h9cuWWsZjt5i1zHLRYUrt3wzEo4xjC.ics"
+    url = get_url()
     response = requests.get(url)
     calendar = Calendar(response.text)
     return calendar
@@ -31,13 +29,15 @@ def parse_calendar_data(file):
             past = True
         else:
             past = False
+        date_obj = datetime.strptime(due_date, "%Y-%m-%d")
+        formatted_date = date_obj.strftime("%B %-d")
 
         sub_dictionary = {
             "uid" : event_id,
             "class" : classname,
             "summary" : summary,
             "description" : description,
-            "due_date" : due_date,
+            "due_date" : formatted_date,
             "completed" : False,
             "past" : past
         }
@@ -65,10 +65,16 @@ def sort_data_by_date(data):
     sorted_data = {}
     for classname in data:
         for i in range(len(data[classname])):
-            sorted_events = sorted(data[classname], key = lambda event: event["due_date"])
+            sorted_events = sorted(
+            data[classname],
+            key=lambda event: get_date_from_string(event["due_date"])
+        )
             sorted_data[classname] = sorted_events
     return sorted_data
 
+
+def get_date_from_string(date_str):
+    return datetime.strptime(date_str, "%B %d")
 
 def get_substring(string, start_char = None, end_char = None):
 

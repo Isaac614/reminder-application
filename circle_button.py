@@ -8,7 +8,7 @@ class CircleButton(QPushButton):
         self.setCheckable(True)
         self.setFixedSize(QSize(12, 12))
         self.setStyleSheet(self.style_empty())
-        self.clicked.connect(self.toggle_fill)
+        self.toggled.connect(self.toggle_fill)
         self.setCursor(QCursor(Qt.PointingHandCursor))
 
     def style_empty(self):

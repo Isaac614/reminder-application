@@ -2,8 +2,8 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel,  QHBoxLayout, QVBoxLa
 from PyQt5.QtCore import Qt
 from clickable_label import ClickableLabel
 from circle_button import CircleButton
-import script
 from pathlib import Path
+import script
 import json
 
 class ReminderApp(QWidget):
@@ -64,12 +64,12 @@ class ReminderApp(QWidget):
 
         self.show_past_checkbox = QCheckBox("Show Past Assignments")
         self.show_past_checkbox.setChecked(False)
-        self.show_past_checkbox.stateChanged.connect(self.update_text_area)
+        self.show_past_checkbox.stateChanged.connect(self.handle_show_past_checkbox_change)
         self.checkbox_layout.addWidget(self.show_past_checkbox)
 
         self.show_completed_checkbox = QCheckBox("Show Completed Assignments")
         self.show_completed_checkbox.setChecked(False)
-        self.show_completed_checkbox.stateChanged.connect(self.update_text_area)
+        self.show_completed_checkbox.stateChanged.connect(self.handle_show_completed_checkbox_change)
         self.checkbox_layout.addWidget(self.show_completed_checkbox)
 
         self.update_text_area()
@@ -123,6 +123,11 @@ class ReminderApp(QWidget):
             self.right_layout.addWidget(row_widget)
 
 
+    def should_show_event(self, event):
+        return (not event["past"] or self.show_past_checkbox.isChecked()) and \
+            (not event["completed"] or self.show_completed_checkbox.isChecked())
+
+
     def create_row_widget(self, index, event):
         row_widget = QWidget()
         row_layout = QHBoxLayout(row_widget)
@@ -160,7 +165,6 @@ class ReminderApp(QWidget):
         self.highlight_label(label=self.all_button)
 
         self.all_button.clicked.connect(self.handle_label_click)
-        self.all_button.clicked.connect(self.update_text_area)
 
         self.left_layout.addWidget(self.all_button)
         self.clickable_labels["all_reminders"] = self.all_button
@@ -168,7 +172,6 @@ class ReminderApp(QWidget):
         for class_name in sorted_calendar_data:
             button = self.create_clickable_label(class_name)
             button.clicked.connect(self.handle_label_click)
-            button.clicked.connect(self.update_text_area)
 
             self.left_layout.addWidget(button)
             self.clickable_labels[button.objectName()] = button
@@ -180,17 +183,33 @@ class ReminderApp(QWidget):
             circle.setChecked(True)
             circle.toggle_fill()
         
+        circle.setProperty("event_data", event)
         circle.setProperty("event_index", index)
         circle.setProperty("event_class", event["class"])
-
-        circle.toggled.connect(self.update_json_on_complete)
-        circle.toggled.connect(self.update_text_area)
+        try:
+            circle.toggled.disconnect(self.handle_circle_toggle)
+        except TypeError:
+            pass
+        circle.toggled.connect(self.handle_circle_toggle)
         return circle
+    
 
+    def handle_circle_toggle(self, checked):
+        # This method handles both toggling the state of the circle button and updating the text area
+        button = self.sender()
+        self.update_json_on_complete(checked, button)  # Updates the JSON file with the new completion status
+        self.update_row_visibility_on_complete(checked, button)  # Updates the row visibility based on completion
+        
 
     def handle_label_click(self):
+
+        sender = self.sender()
+        if sender.property("active") == True:
+            return
+        
         self.clear_all_label_highlights()
         self.highlight_label()
+        self.update_text_area()
 
 
     def highlight_label(self, label = None):
@@ -254,9 +273,66 @@ class ReminderApp(QWidget):
                 return label.text()
 
 
-    def update_json_on_complete(self, checked):
-        button = self.sender()
-        index = button.property("event_index")
+    def update_row_visibility_on_complete(self, checked, button):
+        # button = self.sender()
+        row_widget = button.parent()
+
+        if not self.show_completed_checkbox.isChecked() and checked:
+            row_widget.setVisible(False)
+        else:
+            row_widget.setVisible(True)
+
+
+    def handle_show_past_checkbox_change(self):
+        for i in range(self.right_layout.count()):
+            row = self.right_layout.itemAt(i).widget()
+            if not row or row == self.checkbox_widget:
+                continue
+
+            circle = row.findChild(CircleButton)
+            if not circle:
+                continue
+
+            index = circle.property("event_index")
+            class_name = circle.property("event_class")
+
+            if class_name not in self.sorted_calendar_data:
+                continue
+
+            event_list = self.sorted_calendar_data[class_name]
+            if not (0 <= index < len(event_list)):
+                continue
+
+            event = event_list[index]
+
+            if event["past"]:
+                row.setVisible(self.show_past_checkbox.isChecked())
+
+
+    def handle_show_completed_checkbox_change(self, checked):
+        for i in range(self.right_layout.count()):
+            row = self.right_layout.itemAt(i).widget()
+            if not row or row == self.checkbox_widget:
+                continue  # Skip the checkbox widget itself
+
+            circle = row.findChild(CircleButton)
+            if not circle:
+                continue  # Skip rows that don't contain a circle button
+
+            event = circle.property("event_data")
+            is_completed = circle.isChecked()  # Whether the event is marked as completed
+            is_past = event["past"]  # Whether the event is past
+
+            # Determine if the row should be visible
+            if (is_completed and not checked) or (is_past and not self.show_past_checkbox.isChecked()):
+                row.setVisible(False)
+            else:
+                row.setVisible(True)
+
+
+    def update_json_on_complete(self, checked, button):
+        # button = self.sender()
+        index = button.property("event_index") # TODO - pulling wrong index :(
         class_name = button.property("event_class")
 
         if class_name in self.sorted_calendar_data:
