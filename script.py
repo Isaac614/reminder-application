@@ -9,8 +9,8 @@ def get_url():
     return input("Please enter the ics url: ")
 
 
-def get_ics():
-    url = get_url()
+def get_ics(url):
+    # url = get_url()
     response = requests.get(url)
     calendar = Calendar(response.text)
     return calendar

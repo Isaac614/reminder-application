@@ -1,1 +1,0 @@
-['begin', 'categories', 'classification', 'clone', 'created', 'description', 'duration', 'end', 'ends_within', 'extra', 'geo', 'has_end', 'includes', 'intersects', 'is_included_in', 'join', 'last_modified', 'location', 'make_all_day', 'name', 'organizer', 'serialize', 'serialize_iter', 'starts_within', 'status', 'time_equals', 'transparent', 'uid', 'url']

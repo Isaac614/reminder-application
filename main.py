@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel,  QHBoxLayout, QVBoxLayout, QSizePolicy, QScrollArea, QCheckBox
-from PyQt5.QtCore import Qt
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel,  QHBoxLayout, QVBoxLayout, QSizePolicy, QScrollArea, QCheckBox, QInputDialog
+from PyQt5.QtCore import Qt, QTimer
 from clickable_label import ClickableLabel
 from circle_button import CircleButton
 from pathlib import Path
@@ -7,26 +8,65 @@ import script
 import json
 
 class ReminderApp(QWidget):
-    def __init__(self, sorted_calendar_data):
+    def __init__(self):
         super().__init__()
+        self.setWindowTitle("Reminder Application")
+        self.setGeometry(100, 100, 825, 475)
+        
+        # Layout setup
+        self.layout = QVBoxLayout(self)
 
-        self.sorted_calendar_data = sorted_calendar_data
+        file_path = Path("sorted_events.json")
+        if file_path.exists():
+            with open(file_path) as json_file:
+                self.sorted_calendar_data = json.load(json_file)
 
-        self.setWindowTitle("reminder Application")
+        else:
+            self.ics_link = None
+            self.get_user_input()
+            with open(file_path, 'w') as json_file:
+                calendar = script.get_ics(self.ics_link)
+                dictionary_data = script.parse_calendar_data(calendar)
+                self.sorted_calendar_data = script.sort_data_by_class(dictionary_data)
+                self.sorted_calendar_data = script.sort_data_by_date(self.sorted_calendar_data)
+                script.update_json("sorted_events.json", self.sorted_calendar_data)
+        
+
+        # Load data
+        self.display_data()
+
+
+    def get_user_input(self):
+        # You can use QInputDialog to show a dialog asking for user input
+        text, ok = QInputDialog.getText(self, "Enter ics", "Please enter the ics url\n(navigate to canvas, calendar, and select 'calendar feed' near the bottom)")
+        if ok and text:
+            self.ics_link = text
+        else:
+            pass  # or some default input
+
+
+    def display_data(self):
+        super().__init__()
+        # Set window title and geometry
+        self.setWindowTitle("Reminder Application")
         self.setGeometry(100, 100, 825, 475)
 
+        # Initialize the layout for the window
         self.create_left_column()
         self.create_text_area()
 
+        # Create a main layout (horizontal layout)
         main_layout = QHBoxLayout(self)
 
+        # Set fixed width for left column
         self.left_column.setFixedWidth(self.width() // 5)
 
+        # Add left column and scrollable right column to the main layout
         main_layout.addWidget(self.left_column)
         main_layout.addWidget(self.scroll_area)
 
+        # Apply the main layout to the window
         self.setLayout(main_layout)
-
 
     def create_left_column(self):
         self.left_column = QWidget(self)
@@ -341,24 +381,10 @@ class ReminderApp(QWidget):
 
 
 def main():
-    app = QApplication([])
-    
-    file_path = Path("sorted_events.json")
-    if file_path.exists():
-        with open(file_path) as json_file:
-            sorted_calendar_data = json.load(json_file)
-
-    else:
-        with open(file_path, 'w') as json_file:
-            calendar = script.get_ics()
-            dictionary_data = script.parse_calendar_data(calendar)
-            sorted_calendar_data = script.sort_data_by_class(dictionary_data)
-            sorted_calendar_data = script.sort_data_by_date(sorted_calendar_data)
-            script.update_json("sorted_events.json", sorted_calendar_data)
-
-    window = ReminderApp(sorted_calendar_data)
-    window.show()
-    app.exec_()
+    app = QApplication([])  # QApplication must be created first
+    window = ReminderApp()  # Create the ReminderApp window
+    window.show()  # Show the window
+    app.exec_()  # Start the event loop
 
 
 if __name__ == "__main__":
