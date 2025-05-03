@@ -6,7 +6,7 @@ class CircleButton(QPushButton):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setCheckable(True)
-        self.setFixedSize(QSize(12, 12))
+        self.setFixedSize(QSize(16, 16))
         self.setStyleSheet(self.style_empty())
         self.toggled.connect(self.toggle_fill)
         self.setCursor(QCursor(Qt.PointingHandCursor))
@@ -14,18 +14,25 @@ class CircleButton(QPushButton):
     def style_empty(self):
         return """
             QPushButton {
-                border: 1px solid black;
-                border-radius: 6px;
+                border: 2px solid #5920E8;
+                border-radius: 8px;
                 background-color: transparent;
+            }
+            QPushButton:hover {
+                border: 2px solid #7A3DFF;
             }
         """
 
     def style_filled(self):
         return """
             QPushButton {
-                border: 1px solid black;
-                border-radius: 6px;
-                background-color: purple;
+                border: 2px solid #5920E8;
+                border-radius: 8px;
+                background-color: #5920E8;
+            }
+            QPushButton:hover {
+                border: 2px solid #7A3DFF;
+                background-color: #7A3DFF;
             }
         """
 
