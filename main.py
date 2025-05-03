@@ -244,7 +244,8 @@ class ReminderApp(QWidget):
         self.checkbox_layout.addWidget(self.show_future_checkbox)
 
         # Create all row widgets upfront
-        for class_name, events in self.sorted_calendar_data.items():
+        for class_name, class_data in self.sorted_calendar_data.items():
+            events = class_data["events"]
             for index, event in enumerate(events):
                 row_widget = self.create_row_widget(index, event)
                 self.row_widgets[f"{class_name}_{index}"] = row_widget
@@ -288,7 +289,8 @@ class ReminderApp(QWidget):
         # Show relevant widgets based on selected class
         if class_name != "All Reminders":
             # Show widgets for selected class
-            for index, event in enumerate(self.sorted_calendar_data[class_name]):
+            events = self.sorted_calendar_data[class_name]["events"]
+            for index, event in enumerate(events):
                 widget_key = f"{class_name}_{index}"
                 if widget_key in self.row_widgets:
                     widget = self.row_widgets[widget_key]
@@ -296,7 +298,8 @@ class ReminderApp(QWidget):
                         widget.setVisible(True)
         else:
             # Show all widgets that match the filter criteria
-            for class_name, events in self.sorted_calendar_data.items():
+            for class_name, class_data in self.sorted_calendar_data.items():
+                events = class_data["events"]
                 for index, event in enumerate(events):
                     widget_key = f"{class_name}_{index}"
                     if widget_key in self.row_widgets:
@@ -351,6 +354,7 @@ class ReminderApp(QWidget):
     def create_buttons(self, sorted_calendar_data):
         self.clickable_labels = {}
 
+        # Create the "All Reminders" button first
         self.all_button = ClickableLabel("All Reminders", self.left_column)
         self.all_button.setFixedHeight(40)
         self.all_button.setObjectName("All_Reminders_button")
@@ -382,7 +386,14 @@ class ReminderApp(QWidget):
         self.left_layout.addWidget(self.all_button)
         self.clickable_labels["all_reminders"] = self.all_button
         
-        for class_name in sorted_calendar_data:
+        # Sort classes by their order value
+        sorted_classes = sorted(
+            sorted_calendar_data.items(),
+            key=lambda x: x[1]["order"]
+        )
+        
+        # Create buttons for each class in order
+        for class_name, class_data in sorted_classes:
             button = self.create_clickable_label(class_name)
             button.clicked.connect(self.handle_label_click)
             self.left_layout.addWidget(button)
@@ -516,7 +527,8 @@ class ReminderApp(QWidget):
 
 
     def handle_show_past_checkbox_change(self):
-        for class_name, events in self.sorted_calendar_data.items():
+        for class_name, class_data in self.sorted_calendar_data.items():
+            events = class_data["events"]
             for index, event in enumerate(events):
                 widget_key = f"{class_name}_{index}"
                 if widget_key in self.row_widgets:
@@ -526,7 +538,8 @@ class ReminderApp(QWidget):
 
 
     def handle_show_completed_checkbox_change(self, checked):
-        for class_name, events in self.sorted_calendar_data.items():
+        for class_name, class_data in self.sorted_calendar_data.items():
+            events = class_data["events"]
             for index, event in enumerate(events):
                 widget_key = f"{class_name}_{index}"
                 if widget_key in self.row_widgets:
@@ -538,12 +551,11 @@ class ReminderApp(QWidget):
 
 
     def update_json_on_complete(self, checked, button):
-        # button = self.sender()
-        index = button.property("event_index") # TODO - pulling wrong index :(
+        index = button.property("event_index")
         class_name = button.property("event_class")
 
         if class_name in self.sorted_calendar_data:
-            self.sorted_calendar_data[class_name][index]["completed"] = checked
+            self.sorted_calendar_data[class_name]["events"][index]["completed"] = checked
             script.update_json("sorted_events.json", self.sorted_calendar_data)
 
 

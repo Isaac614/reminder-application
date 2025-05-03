@@ -1,13 +1,14 @@
-from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QLabel
-from PyQt5.QtGui import QCursor
+from PyQt5.QtCore import Qt, pyqtSignal
 
 class ClickableLabel(QLabel):
     clicked = pyqtSignal()
 
     def __init__(self, text, parent=None):
         super().__init__(text, parent)
-        self.setCursor(QCursor(Qt.PointingHandCursor))  # Make cursor a pointer on hover
+        self.setCursor(Qt.PointingHandCursor)
 
     def mousePressEvent(self, event):
-        self.clicked.emit()
+        if event.button() == Qt.LeftButton:
+            self.clicked.emit()
+        super().mousePressEvent(event)

@@ -47,29 +47,33 @@ def parse_calendar_data(file):
 
 
 def sort_data_by_class(data):
-
     classnames = []
     for event in data:
         if event["class"] not in classnames:
             classnames.append(event["class"])
 
     sorted_dictionary = {}
-    for classname in classnames:
-        sorted_dictionary[classname] = get_assignments_for_class(data, classname)
+    for index, classname in enumerate(classnames):
+        sorted_dictionary[classname] = {
+            "order": index,
+            "events": get_assignments_for_class(data, classname)
+        }
     
     return sorted_dictionary
 
 
 def sort_data_by_date(data):
-    
     sorted_data = {}
     for classname in data:
-        for i in range(len(data[classname])):
-            sorted_events = sorted(
-            data[classname],
+        events = data[classname]["events"]
+        sorted_events = sorted(
+            events,
             key=lambda event: get_date_from_string(event["due_date"])
         )
-            sorted_data[classname] = sorted_events
+        sorted_data[classname] = {
+            "order": data[classname]["order"],
+            "events": sorted_events
+        }
     return sorted_data
 
 
